@@ -1,19 +1,19 @@
 const fs = require('fs');
 
-// Array of JSON file names
+
 const jsonFiles = ['input_test_case_1.json', 'input_test_case_2.json'];
 
-// Function to process a single JSON file
+
 function processFile(fileName) {
-    // Read and parse the JSON file
+    
     const data = JSON.parse(fs.readFileSync(fileName, 'utf8'));
 
-    // Extract n and k from the input
+    
     const n = data.keys.n;
     const k = data.keys.k;
     let points = [];
 
-    // Decode the points
+    
     for (let i = 1; i <= n; i++) {
         if (data[i]) {
             const x = i;
@@ -24,10 +24,10 @@ function processFile(fileName) {
         }
     }
 
-    // Ensure only the first k points are taken
+    
     points = points.slice(0, k);
 
-    // Function to create the Vandermonde matrix
+    
     function createVandermondeMatrix(points, degree) {
         let matrix = [];
         for (let i = 0; i < points.length; i++) {
@@ -40,12 +40,12 @@ function processFile(fileName) {
         return matrix;
     }
 
-    // Function to perform Gaussian elimination
+    
     function gaussianElimination(A, b) {
         let n = A.length;
 
         for (let i = 0; i < n; i++) {
-            // Find max in the current column
+            
             let maxRow = i;
             for (let k = i + 1; k < n; k++) {
                 if (Math.abs(A[k][i]) > Math.abs(A[maxRow][i])) {
@@ -53,11 +53,11 @@ function processFile(fileName) {
                 }
             }
 
-            // Swap rows
+            
             [A[i], A[maxRow]] = [A[maxRow], A[i]];
             [b[i], b[maxRow]] = [b[maxRow], b[i]];
 
-            // Make all rows below this one 0 in the current column
+            
             for (let k = i + 1; k < n; k++) {
                 let c = -A[k][i] / A[i][i];
                 for (let j = i; j < n; j++) {
@@ -67,7 +67,7 @@ function processFile(fileName) {
             }
         }
 
-        // Solve equation Ax = b for an upper triangular matrix A
+        
         let x = new Array(n).fill(0);
         for (let i = n - 1; i >= 0; i--) {
             x[i] = b[i] / A[i][i];
@@ -78,17 +78,17 @@ function processFile(fileName) {
         return x;
     }
 
-    // Create the Vandermonde matrix and the result vector
+    
     let degree = k - 1;
     let A = createVandermondeMatrix(points, degree);
     let b = points.map(point => point.y);
 
-    // Solve for coefficients
+    
     let coefficients = gaussianElimination(A, b);
 
-    // Print the constant term (c)
+    
     console.log(`The secret (constant term c) from ${fileName} is: ${coefficients[0]}`);
 }
 
-// Process all JSON files in the array
+
 jsonFiles.forEach(processFile);
